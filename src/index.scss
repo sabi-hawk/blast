@@ -1,0 +1,11 @@
+.main-body{
+    display: flex;
+    gap: 10px;
+    justify-content: space-evenly;
+    align-items: center;
+    .col-2{
+        img{
+            height: 400px;
+        }
+    }
+}
