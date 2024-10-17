@@ -3,6 +3,7 @@ import MainPicture from "../../assets/images/MainPicture.jpg";
 import Image from "next/image";
 import { Button, Row } from "antd";
 import "./index.scss";
+import Link from "next/link";
 
 function MainBody() {
   return (
@@ -18,7 +19,9 @@ function MainBody() {
             marketing efforts with blast, powerful tool designed to make email
             marketing simple and effective
           </p>
-          <Button type="primary">Get Started</Button>
+          <Link href="/signUp">
+            <Button type="primary">Get Started</Button>
+          </Link>
         </div>
       </div>
       <div className="col-2">

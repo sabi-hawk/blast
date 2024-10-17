@@ -25,7 +25,7 @@ function AppHeader() {
         </ul>
       </nav>
       <div className="btn-wrap">
-        <Link href="/signup">
+        <Link href="/signUp">
           <Button>Create Account</Button>
         </Link>
         <Link href="/login">
