@@ -1,13 +1,13 @@
 import React from "react";
-import Link from "next/link";
 import { Button, Form, Input } from "antd";
-import Image from "next/image";
-import facebookIcon from "../../assets/images/LoginPage/facebookIcon.png";
-import googleIcon from "../../assets/images/LoginPage/googleIcon.png";
-import appleIcon from "../../assets/images/LoginPage/appleIcon.png";
-import twitterIcon from "../../assets/images/LoginPage/twitterIcon.png";
-
-interface LoginValues {
+import Link from "next/link";
+import {
+  EyeInvisibleOutlined,
+  MailOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+interface SignUpValues {
+  username: string;
   email: string;
   password: string;
 }
@@ -15,115 +15,117 @@ interface LoginValues {
 function SignUpForm() {
   const [form] = Form.useForm();
 
-  const onFinish = (values: LoginValues) => {
-    handleLogin(values);
-  };
-
-  const handleLogin = async (values: LoginValues) => {
+  const handleSignUp = async (values: SignUpValues) => {
     console.log(values);
   };
+
+  const onFinish = (values: SignUpValues) => {
+    handleSignUp(values);
+  };
+
   return (
     <Form
       form={form}
       onFinish={onFinish}
-      className="px-4 py-5 px-md-5"
       style={{
         borderRadius: "0.35rem",
       }}
     >
-      <div>
-        <label className="bold">Email Address</label>
-        <Form.Item
-          name="emailAddress"
-          rules={[
-            {
-              required: true,
-              message: "Please enter your email address",
-            },
-          ]}
-        >
-          <Input
-            type="email"
-            placeholder="example@gmail.com"
-            className="bg-transparent form-control py-2"
-          />
-        </Form.Item>
-      </div>
+      <Form.Item
+        name="username"
+        rules={[
+          {
+            required: true,
+            message: "Please enter your username",
+          },
+        ]}
+      >
+        <Input
+          suffix={<UserOutlined />}
+          type="text"
+          placeholder="Username*"
+          className="bg-transparent form-control py-2"
+        />
+      </Form.Item>
 
-      <div>
-        <label className="bold">Password</label>
-        <Form.Item
-          name="password"
-          rules={[
-            {
-              required: true,
-              message: "Please enter your password",
-            },
-          ]}
-        >
-          <Input.Password
-            placeholder="Enter Password"
-            className="bg-transparent form-control py-2"
-          />
-        </Form.Item>
-      </div>
+      <Form.Item
+        name="email"
+        rules={[
+          {
+            required: true,
+            message: "Please enter your email",
+          },
+        ]}
+      >
+        <Input
+          suffix={<MailOutlined />}
+          type="email"
+          placeholder="Email*"
+          className="bg-transparent form-control py-2"
+        />
+      </Form.Item>
 
-      <div>
-        <label className="bold">Confirm Password</label>
-        <Form.Item
-          name="confirmPassword"
-          rules={[
-            {
-              required: true,
-              message: "Please confirm your password",
+      <Form.Item
+        name="password"
+        rules={[
+          {
+            required: true,
+            message: "Please enter your password",
+          },
+        ]}
+      >
+        <Input.Password
+          suffix={<EyeInvisibleOutlined />}
+          placeholder="Password*"
+          className="bg-transparent form-control py-2"
+        />
+      </Form.Item>
+      <Form.Item
+        name="confirmPassword"
+        dependencies={["password"]}
+        rules={[
+          {
+            required: true,
+            message: "Please enter confirm password",
+          },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue("password") === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(
+                new Error("The confirm password that you entered do not match!")
+              );
             },
-          ]}
-        >
-          <Input.Password
-            placeholder="Confirm Password"
-            className="bg-transparent form-control py-2"
-          />
-        </Form.Item>
-      </div>
+          }),
+        ]}
+      >
+        <Input.Password
+          suffix={<EyeInvisibleOutlined />}
+          placeholder="Confirm Password*"
+          className="bg-transparent form-control py-2"
+        />
+      </Form.Item>
 
-      <Link href="/login">
-        <Button
-          className="w-[396px] h-[44px] rounded-[10px] font-roboto font-normal text-lg"
-          type="primary"
-        >
-          Sign up
-        </Button>
-      </Link>
-      <p>
-        Already have an account?
+      <p className="text-[16px] font-medium mb-2">
+        Already registered?
         <a
           href="/login"
-          className="text-custom-blue no-underline hover:underline"
+          className="text-custom-blue no-underline hover:underline text-[16px] font-medium text-[#1677ff]"
         >
-          Sign In
+          {" "}
+          Login
         </a>
       </p>
 
-      <div className="flex items-center text-center my-4">
-        <span className="flex-1 border-b border-gray-300 mr-2"></span>
-        or
-        <span className="flex-1 border-b border-gray-300 ml-2"></span>
-      </div>
-      <p className="flex justify-around">Sign in with</p>
-      <div className="flex justify-center gap-2.5 mt-2.5">
-        <Button className="w-12 h-8">
-          <Image src={facebookIcon} alt="Facebook Icon" />
+      <Link href="/dashboard">
+        <Button
+          className="w-full h-[44px] rounded-[10px] font-roboto font-normal text-lg"
+          type="primary"
+        >
+          Register
         </Button>
-        <Button className="w-12 h-8">
-          <Image src={googleIcon} alt="Google Icon" />
-        </Button>
-        <Button className="w-12 h-8">
-          <Image src={appleIcon} alt="Apple Icon" />
-        </Button>
-        <Button className="w-12 h-8">
-          <Image src={twitterIcon} alt="Twitter Icon" />
-        </Button>
-      </div>
+      </Link>
     </Form>
   );
 }

@@ -31,7 +31,7 @@ export default function Home() {
           </ul>
         </nav>
         <div className="flex gap-2.5">
-          <Link href="/signUp">
+          <Link href="/signup">
             <Button>Create Account</Button>
           </Link>
           <Link href="/login">
