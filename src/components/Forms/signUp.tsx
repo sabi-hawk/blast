@@ -118,14 +118,15 @@ function SignUpForm() {
         </a>
       </p>
 
-      <Link href="/dashboard">
+      {/* <Link href="/dashboard"> */}
         <Button
           className="w-full h-[44px] rounded-[10px] font-roboto font-normal text-lg"
           type="primary"
+          htmlType="submit"
         >
           Register
         </Button>
-      </Link>
+      {/* </Link> */}
     </Form>
   );
 }
