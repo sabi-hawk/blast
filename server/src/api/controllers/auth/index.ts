@@ -22,7 +22,7 @@ export const register = httpMethod(async (req, res): Promise<any> => {
     const hashedPassword = await bcrypt.hash(reqData.password, 10);
     const user = await User.create({ ...reqData, password: hashedPassword });
     // await About.create({ userId: user._id, preferredGender: req.body.preferredGender, gender: req.body.gender })
-    res.status(201).json({ user: { name: user.name, email: user.email, phone: user.phone, dob: user.dob }, message: "Signed Up Successfully !" })
+    res.status(201).json({ user: { username: user.username, email: user.email }, message: "Signed Up Successfully !" })
 })
 
 // export const login = httpMethod(async (req, res) => {
