@@ -1,39 +1,35 @@
 import axios from "axios";
-// import store from "../flux/store";
-// import { setUser } from "../flux/reducers/auth";
-// import { setChatsData } from "flux/reducers/chat";
-// import { setTemplates } from "../flux/reducers/extras";
 
 const API = axios.create({ baseURL: "http://localhost:8000/api" });
 
-// API.interceptors.request.use(
-//   (config) => {
-//     const {
-//       auth: { token },
-//     } = store.getState();
-//     if (token && config.headers) {
-//       config.headers["auth-token"] = token;
-//     }
+// Request Interceptor: Attach token to requests if available
+API.interceptors.request.use(
+  (config) => {
+    // Retrieve token from localStorage
+    const token = localStorage.getItem("authToken");
+    if (token && config.headers) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    console.error("Request Error: ", error);
+    return Promise.reject(error);
+  }
+);
 
-//     return config;
-//   },
-//   (error) => {
-//     console.log("API Request | Interceptor |  Error", error);
-//     return Promise.reject(error);
-//   }
-// );
-// API.interceptors.response.use(
-//   (res) => {
-//     return res;
-//   },
-//   (error) => {
-//     if (error.response?.status === 401) {
-//       store.dispatch(setUser({}));
-//       store.dispatch(setChatsData({}));
-//       store.dispatch(setTemplates({}));
-//     } else {
-//       return error?.response;
-//     }
-//   }
-// );
+// Response Interceptor: Handle global responses or errors
+API.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Handle unauthorized responses (e.g., clear user session)
+      console.error("Unauthorized Access - Please log in again.");
+      localStorage.removeItem("authToken");
+      window.location.href = "/login"; // Redirect to login page
+    }
+    return Promise.reject(error.response?.data || error.message);
+  }
+);
+
 export default API;
