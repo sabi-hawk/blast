@@ -1,29 +1,76 @@
 // import { Request, Response } from "express";
 import { httpMethod } from "..";
-// import { SECRET } from "../../../config/app";
+import { SECRET } from "../../../config/app";
 // import Session from "../../../models/Session";
 import User from "../../../models/User";
 import bcrypt from "bcrypt";
 import { validateRegisterRequest } from "./validator";
-// import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 // import About from "../../../models/About";
 
-
 export const register = httpMethod(async (req, res): Promise<any> => {
-    const reqData = await validateRegisterRequest(req);
-    const existingUser = await User.findOne({ email: reqData.email });
-    if (existingUser) {
-        throw {
-            status: 400,
-            message: "Email Already Exists!",
-        };
-    }
+  const reqData = await validateRegisterRequest(req);
+  const existingUser = await User.findOne({ email: reqData.email });
+  if (existingUser) {
+    throw {
+      status: 400,
+      message: "Email Already Exists!",
+    };
+  }
 
-    const hashedPassword = await bcrypt.hash(reqData.password, 10);
-    const user = await User.create({ ...reqData, password: hashedPassword });
-    // await About.create({ userId: user._id, preferredGender: req.body.preferredGender, gender: req.body.gender })
-    res.status(201).json({ user: { username: user.username, email: user.email }, message: "Signed Up Successfully !" })
-})
+  const hashedPassword = await bcrypt.hash(reqData.password, 10);
+  const user = await User.create({ ...reqData, password: hashedPassword });
+  // await About.create({ userId: user._id, preferredGender: req.body.preferredGender, gender: req.body.gender })
+  res.status(201).json({
+    user: { username: user.username, email: user.email },
+    message: "Signed Up Successfully !",
+  });
+});
+
+// Login function
+export const login = httpMethod(async (req, res) => {
+  const { email, password } = req.body;
+
+  // Find user by email
+  const existingUser = await User.findOne({ email });
+
+  if (!existingUser) {
+    throw {
+      status: 400,
+      message: "User not found!",
+    };
+  }
+
+  // Compare passwords
+  const matchPassword = await bcrypt.compare(password, existingUser.password);
+
+  if (!matchPassword) {
+    throw {
+      status: 400,
+      message: "Invalid credentials!",
+    };
+  }
+
+  // Create session token
+  const token = jwt.sign(
+    { email: existingUser.email, userId: existingUser._id },
+    SECRET,
+    { expiresIn: "1h" } // Token expiration (1 hour)
+  );
+
+  // Send user data and token
+  const user = {
+    _id: existingUser._id,
+    username: existingUser.username,
+    email: existingUser.email,
+  };
+
+  res.status(200).json({
+    user,
+    token,
+    message: "Successfully logged in!",
+  });
+});
 
 // export const login = httpMethod(async (req, res) => {
 //     const reqData = await validateLoginRequest(req);
