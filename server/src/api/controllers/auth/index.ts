@@ -1,12 +1,10 @@
-// import { Request, Response } from "express";
 import { httpMethod } from "..";
-// import { SECRET } from "../../../config/app";
-// import Session from "../../../models/Session";
 import User from "../../../models/User";
 import bcrypt from "bcrypt";
-import { validateRegisterRequest } from "./validator";
-// import jwt from "jsonwebtoken"
-// import About from "../../../models/About";
+import { validateLoginRequest, validateRegisterRequest } from "./validator";
+import jwt from "jsonwebtoken"
+import Session from "../../../models/Session";
+import { SECRET } from "../../../config/app";
 
 
 export const register = httpMethod(async (req, res): Promise<any> => {
@@ -25,41 +23,40 @@ export const register = httpMethod(async (req, res): Promise<any> => {
     res.status(201).json({ user: { username: user.username, email: user.email }, message: "Signed Up Successfully !" })
 })
 
-// export const login = httpMethod(async (req, res) => {
-//     const reqData = await validateLoginRequest(req);
-//     const existingUser = await User.findOne({ email: reqData.email });
+export const login = httpMethod(async (req, res) => {
+    const reqData = await validateLoginRequest(req);
+    const existingUser = await User.findOne({ email: reqData.email });
 
-//     if (!existingUser) {
-//         throw {
-//             status: 400,
-//             message: "User not Found!",
-//         };
+    if (!existingUser) {
+        throw {
+            status: 400,
+            message: "User not Found!",
+        };
 
-//     }
-//     const matchPassword = await bcrypt.compare(reqData.password, existingUser.password)
+    }
+    const matchPassword = await bcrypt.compare(reqData.password, existingUser.password)
 
-//     if (!matchPassword) {
-//         throw {
-//             status: 400,
-//             message: "Invalid Credentials !",
-//         };
-//     }
+    if (!matchPassword) {
+        throw {
+            status: 400,
+            message: "Invalid Credentials !",
+        };
+    }
 
-//     const user = {
-//         _id: existingUser._id,
-//         email: existingUser.email,
-//         phone: existingUser.phone,
-//         name: existingUser.name,
-//         // gender: existingUser.gender,
-//         dob: existingUser.dob,
-//         role: existingUser.role,
-//         // Add other properties you need
-//     };
+    const user = {
+        _id: existingUser._id,
+        email: existingUser.email,
+        // phone: existingUser.phone,
+        username: existingUser.username,
+        // gender: existingUser.gender,
+        // dob: existingUser.dob,
+        role: existingUser.role,
+        // Add other properties you need
+    };
 
-//     const session = await createSession(existingUser)
-//     const userAbout = await About.findOne({ userId: existingUser._id })
-//     res.status(200).json({ user: { ...user, about: userAbout || {} }, token: session.accessToken, expiresAt: session.expiresAt, message: "Successfully LoggedIn!" })
-// })
+    const session = await createSession(existingUser)
+    res.status(200).json({ user: { ...user }, token: session.accessToken, expiresAt: session.expiresAt, message: "Successfully LoggedIn!" })
+})
 
 // export const changePassword = httpMethod(async (req, res) => {
 
@@ -90,14 +87,14 @@ export const register = httpMethod(async (req, res): Promise<any> => {
 // export const logout = httpMethod(async (req: Request, res: Response) => {
 
 // })
-// const createSession = async (user: any) => {
-//     const expiresAt = new Date();
-//     expiresAt.setHours(expiresAt.getHours() + 1);
-//     const newSession = await new Session({
-//         userId: user._id,
-//         expiresAt: expiresAt
-//     }).save();
-//     const token = jwt.sign({ email: user.email, userId: user._id, sessionId: newSession._id }, SECRET);
-//     newSession.accessToken = token;
-//     return newSession.save()
-// }
+const createSession = async (user: any) => {
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+    const newSession = await new Session({
+        userId: user._id,
+        expiresAt: expiresAt
+    }).save();
+    const token = jwt.sign({ email: user.email, userId: user._id, sessionId: newSession._id }, SECRET);
+    newSession.accessToken = token;
+    return newSession.save()
+}

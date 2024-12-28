@@ -19,7 +19,7 @@ function SignUpForm() {
   const handleSignUp = async (values: SignUpValues) => {
     try {
       // Simulate API call (replace with your actual API call)
-      const {status, data} = await register(values);
+      const { status, data } = await register(values);
 
       if (status === 201) {
         messageApi.success(data.message);
@@ -28,8 +28,12 @@ function SignUpForm() {
       } else {
         throw new Error(data.message || "Signup failed");
       }
-    } catch (error: any) {
-      messageApi.error(error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        messageApi.error(error.message);
+      } else {
+        messageApi.error("An unexpected error occurred.");
+      }
     }
   };
 

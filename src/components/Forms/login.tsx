@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Button, Form, Input, Checkbox, message } from "antd";
 import { EyeInvisibleOutlined, UserOutlined } from "@ant-design/icons";
 import { login } from "@/api/auth"; // Import the login API
+import { useRouter } from "next/navigation";
 
 interface LoginValues {
   email: string;
@@ -12,7 +13,7 @@ interface LoginValues {
 function LoginForm() {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage(); // Ant Design message context
-
+  const router = useRouter();
   const handleLogin = async (values: LoginValues) => {
     try {
       // Call the login API
@@ -20,7 +21,8 @@ function LoginForm() {
       if (status === 200) {
         messageApi.success(data.message); // Show success message
         // Redirect to dashboard or desired page
-        window.location.href = "/dashboard";
+        // window.location.href = "/dashboard";
+        router.push("/dashboard");
       } else {
         throw new Error(data.message || "Login failed");
       }
