@@ -1,13 +1,5 @@
-"use client";
 import { Button, Col, Row } from "antd";
-import Image from "next/image";
-import LoginImage from "../../assets/images/login.png";
-import googleIcon from "../../assets/icons/social-google.png";
-import facebookIcon from "../../assets/icons/social-fb.png";
-import linkedInIcon from "../../assets/icons/social-linkedin.png";
-import twitterIcon from "../../assets/icons/social-twitter.png";
-import React from "react";
-import LoginForm from "@/components/Forms/login";
+import LoginForm from "components/Forms/login";
 
 function Login() {
   return (
@@ -37,16 +29,16 @@ function Login() {
         </div>
         <div className="flex justify-center gap-2.5 mt-2.5">
           <Button className="w-auto h-auto p-0 border-0">
-            <Image src={googleIcon} alt="Google Icon" />
+            <img src="/assets/icons/social-google.png" alt="Google Icon" />
           </Button>
           <Button className="w-auto h-auto p-0 border-0">
-            <Image src={facebookIcon} alt="Facebook Icon" />
+            <img src="/assets/icons/social-fb.png" alt="Facebook Icon" />
           </Button>
           <Button className="w-auto h-auto p-0 border-0">
-            <Image src={linkedInIcon} alt="LinkedIn Icon" />
+            <img src="/assets/icons/social-linkedin.png" alt="LinkedIn Icon" />
           </Button>
           <Button className="w-auto h-auto p-0 border-0">
-            <Image src={twitterIcon} alt="Twitter Icon" />
+            <img src="/assets/icons/social-twitter.png" alt="Twitter Icon" />
           </Button>
         </div>
       </Col>
@@ -54,9 +46,9 @@ function Login() {
         className="h-full bg-[#fafcfe] flex justify-center shadow-[0px_1px_3px_rgba(0,0,0,0.25)]"
         span={12}
       >
-        <Image
+        <img
           className="h-full object-contain bg-cover"
-          src={LoginImage}
+          src="/assets/images/login.png"
           alt="Landing Page"
           width={650}
           height={433.2}

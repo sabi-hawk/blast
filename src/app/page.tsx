@@ -1,12 +1,4 @@
 import { Button, Row } from "antd";
-import Image from "next/image";
-import Link from "next/link";
-import logo from "../assets/images/logo.png";
-import MainPicture from "../assets/images/MainPicture.jpg";
-import emailIcon from "../assets/images/tracking.png";
-import successIcon from "../assets/images/success.png";
-import deliveryIcon from "../assets/images/email-delivery.png";
-import personalizedIcon from "../assets/images/personalization.png";
 
 export default function Home() {
   return (
@@ -14,7 +6,12 @@ export default function Home() {
       {/* Header */}
       <Row className="bg-[#ededed] p-[14px_35px] flex justify-between items-center">
         <div className="flex items-center gap-4">
-          <Image src={logo} alt="MainPicture " height={50} width={50} />
+          <img
+            src="/assets/images/logo.png"
+            alt="MainPicture "
+            height={50}
+            width={50}
+          />
           <h1 className="font-ubuntu text-[22px] text-[#545455]">BLAST </h1>
         </div>
         <nav>
@@ -31,12 +28,12 @@ export default function Home() {
           </ul>
         </nav>
         <div className="flex gap-2.5">
-          <Link href="/signup">
+          <a href="/signup">
             <Button>Create Account</Button>
-          </Link>
-          <Link href="/login">
+          </a>
+          <a href="/login">
             <Button type="primary">Login</Button>
-          </Link>
+          </a>
         </div>
       </Row>
       {/* Body */}
@@ -54,15 +51,15 @@ export default function Home() {
               email marketing efforts with blast, powerful tool designed to make
               email marketing simple and effective
             </p>
-            <Link href="/signUp">
+            <a href="/signUp">
               <Button type="primary">Get Started</Button>
-            </Link>
+            </a>
           </div>
         </div>
         <div className="w-1/2 flex justify-center">
-          <Image
+          <img
             className="h-[450px] w-auto"
-            src={MainPicture}
+            src="/assets/images/MainPicture.jpg"
             alt="MainPicture "
           />
         </div>
@@ -70,16 +67,26 @@ export default function Home() {
       {/* Footer */}
       <Row className="flex justify-evenly gap-10 mx-auto items-center w-[90%]">
         <div className="flex flex-row items-center text-left gap-1">
-          <Image src={emailIcon} alt="Email Tracking" width={30} height={30} />
+          <img
+            src="/assets/images/tracking.png"
+            alt="Email Tracking"
+            width={30}
+            height={30}
+          />
           <span>Real-Time Email Tracking</span>
         </div>
         <div className="flex flex-row items-center text-left gap-1">
-          <Image src={successIcon} alt="Success Rate" width={30} height={30} />
+          <img
+            src="/assets/images/success.png"
+            alt="Success Rate"
+            width={30}
+            height={30}
+          />
           <span>100% Success Rate</span>
         </div>
         <div className="flex flex-row items-center text-left gap-1">
-          <Image
-            src={deliveryIcon}
+          <img
+            src="/assets/images/email-delivery.png"
             alt="Guaranteed Delivery "
             width={30}
             height={30}
@@ -87,8 +94,8 @@ export default function Home() {
           <span>Guaranteed Email Delivery</span>
         </div>
         <div className="flex flex-row items-center text-left gap-1">
-          <Image
-            src={personalizedIcon}
+          <img
+            src="/assets/images/personalization.png"
             alt="Personalized Emailing "
             width={30}
             height={30}

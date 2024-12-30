@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:server": "nodemon ./src/api/server.ts"
+    "dev:server": "nodemon --exec ts-node -r tsconfig-paths/register ./src/api/server.ts"
   },
   "keywords": [],
   "author": "",
@@ -30,6 +30,7 @@
     "mongoose": "^8.8.4",
     "nodemon": "^3.1.7",
     "socket.io": "^4.8.1",
+    "tsconfig-paths": "^4.2.0",
     "winston": "^3.17.0",
     "yup": "^1.5.0"
   }

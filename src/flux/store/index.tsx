@@ -1,6 +1,8 @@
-import { configureStore } from "@reduxjs/toolkit";
+'use client';
+import {
+  configureStore,
+} from "@reduxjs/toolkit";
 import rootReducer from "../reducers";
-import thunk from "redux-thunk";
 import {
   persistStore,
   persistReducer,
@@ -14,7 +16,7 @@ import {
 import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
-  key: "root-dating",
+  key: "root-portal",
   storage,
 };
 
@@ -27,7 +29,7 @@ const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(thunk),
+    }),
   devTools: true,
 });
 
