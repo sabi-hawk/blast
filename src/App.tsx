@@ -4,6 +4,8 @@ import Home from "app/page";
 import Login from "app/login/page";
 import SignUp from "app/signup/page";
 import Dashboard from "app/dashboard/page";
+import ProviderLayout from "components/Layouts/Provider";
+import EmailComposer from "app/Provider/EmailComposer";
 
 const App = () => {
   const {
@@ -12,20 +14,24 @@ const App = () => {
 
   if (user) {
     return (
-      // <AdminLayout>
+      <ProviderLayout>
         <Routes>
           <Route
             path="/"
             element={
-              user ? <Navigate to="/dashboard" /> : <Navigate to="login" />
+              user ? <Navigate to="/campaign" /> : <Navigate to="login" />
             }
           />
           <Route
-            path="/dashboard"
+            path="/campaign"
             element={user ? <Dashboard /> : <Navigate to="../auth" />}
           />
+          <Route
+            path="/email-composer"
+            element={user ? <EmailComposer /> : <Navigate to="../auth" />}
+          />
         </Routes>
-      // </AdminLayout>
+      </ProviderLayout>
     );
   }
 

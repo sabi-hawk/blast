@@ -30,7 +30,7 @@ function LoginForm() {
         messageApi.success(message);
         form.resetFields();
         dispatch(setUser(payload));
-        navigate("/dashboard");
+        navigate("/campaign");
       } else {
         throw new Error(message || "Login failed");
       }

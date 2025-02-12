@@ -1,13 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-type typeExtras = {
+type typeMeta = {
   templates: Array<any>;
 };
 // @ts-ignore
-const initialState: typeExtras = {};
+const initialState: typeMeta = {};
 
-const extras = createSlice({
-  name: "extras",
+const meta = createSlice({
+  name: "meta",
   initialState,
   reducers: {
     setTemplates: (state = initialState, action) => {
@@ -18,6 +18,6 @@ const extras = createSlice({
     },
   },
 });
-export default extras.reducer;
+export default meta.reducer;
 
-export const { setTemplates } = extras.actions;
+export const { setTemplates } = meta.actions;

@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authRouter from "./auth";
+import templatesRouter from "./templates";
 // import userRouter from "./user";
 // import mediaRouter from "./media";
 // import aboutRouter from "./about";
@@ -10,6 +11,7 @@ import authRouter from "./auth";
 const apiRouter = Router();
 
 apiRouter.use("/auth", authRouter);
+apiRouter.use("/templates", templatesRouter);
 // apiRouter.use("/about", aboutRouter);
 // apiRouter.use("/conversation", conversationRouter);
 // apiRouter.use("/media", mediaRouter);

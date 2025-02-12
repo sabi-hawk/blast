@@ -1,8 +1,7 @@
-'use client';
 import { combineReducers } from "redux";
 import chatReducer from "./chat";
 import authReducer from "./auth";
-import extrasReducer from "./extras";
+import metaReducer from "./meta";
 import storage from "redux-persist/lib/storage";
 
 const initialState = {};
@@ -21,7 +20,7 @@ const appReducer = combineReducers({
   root: rootReducer,
   chats: chatReducer,
   auth: authReducer,
-  extras: extrasReducer,
+  meta: metaReducer,
 });
 
 
