@@ -5,6 +5,12 @@ import helmet from "helmet";
 import path from 'path';
 import dotenv from "dotenv";
 import apiRouter from './routes';
+import { Server } from "socket.io";
+
+type socketUser = {
+  userId: string,
+  socketId: string
+}
 
 dotenv.config()
 
@@ -52,6 +58,48 @@ app.get('/', (req, res) => {
 
 
 // Create HTTP server
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+
+
+// Initialize Socket.IO
+const socket = new Server(server);
+
+let activeUsers: Array<socketUser> = [];
+socket.on('connection', (client) => {
+  client.on('new-user-add', (newUserId) => {
+    if (!activeUsers.some((user: socketUser) => user.userId === newUserId)) {
+      activeUsers.push({
+        userId: newUserId,
+        socketId: client.id
+      })
+    }
+    console.log("Connected Users", activeUsers);
+    socket.emit('get-users', activeUsers);
+  })
+
+  client.on('send-message', (data: any) => {
+    // const { receiverId } = data;
+    const user = activeUsers.find((user) => user.socketId !== client.id)
+    if (user) {
+      socket.to(user.socketId).emit("receive-message", data)
+    }
+  })
+
+  client.on('send-notification', (data: any) => {
+    console.log("Active Users", activeUsers)
+    const { userId } = data;
+    const user = activeUsers.find((user) => user.userId === userId)
+    console.log("Inside SND NOTIFICATION", user)
+    if (user) {
+      socket.to(user.socketId).emit("receive-notification", data)
+    }
+  })
+  client.on('disconnect', () => {
+    activeUsers = activeUsers.filter((user: socketUser) => user.socketId !== client.id)
+    socket.emit('get-users', activeUsers);
+  })
+})

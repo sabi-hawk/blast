@@ -12,8 +12,10 @@ interface LoginValues {
   email: string;
   password: string;
 }
-
-function LoginForm() {
+interface LoginProps {
+  providerId?: string;
+}
+function LoginForm({ providerId }: LoginProps) {
   const [form] = Form.useForm();
   const messageApi = useMessageApi(); // Ant Design message context
   const navigate = useNavigate();
@@ -23,7 +25,8 @@ function LoginForm() {
     try {
       // Simulate API call (replace with your actual API call)
       dispatch(setLoading(true));
-      const { status, data } = await login(values);
+      const loginPayload = providerId ? { ...values, providerId } : values;
+      const { status, data } = await login(loginPayload);
       const { message, ...payload } = data;
 
       if (status === 200) {

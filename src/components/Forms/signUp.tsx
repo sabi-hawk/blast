@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import { Button, Form, Input, message } from "antd";
 import {
   EyeInvisibleOutlined,
@@ -7,20 +7,28 @@ import {
 } from "@ant-design/icons";
 import { register } from "api/auth";
 import { useMessageApi } from "utils";
+import { useNavigate } from "react-router-dom";
 interface SignUpValues {
   username: string;
   email: string;
   password: string;
 }
 
-function SignUpForm() {
+interface SignUpFormProps {
+  providerId?: string;
+  setIsLogin?: Dispatch<SetStateAction<boolean>>;
+}
+
+function SignUpForm({ providerId, setIsLogin }: SignUpFormProps) {
   const [form] = Form.useForm();
   const messageApi = useMessageApi(); // Ant Design message context
+  const navigate = useNavigate();
 
   const handleSignUp = async (values: SignUpValues) => {
     try {
       // Simulate API call (replace with your actual API call)
-      const { status, data } = await register(values);
+      const registerPayload = providerId ? { ...values, providerId } : values;
+      const { status, data } = await register(registerPayload);
 
       if (status === 201) {
         messageApi.success(data.message);
@@ -128,13 +136,25 @@ function SignUpForm() {
 
       <p className="text-[16px] font-medium mb-2">
         Already registered?
-        <a
+        {/* <a
           href="/login"
           className="text-custom-blue no-underline hover:underline text-[16px] font-medium text-[#1677ff]"
         >
           {" "}
           Login
-        </a>
+        </a> */}
+        <Button
+          onClick={() => {
+            if (providerId && setIsLogin) {
+              setIsLogin(true);
+            } else {
+              navigate("/login");
+            }
+          }}
+          className="pl-1 text-custom-blue no-underline hover:underline text-[16px] font-medium text-[#1677ff] bg-transparent border-none cursor-pointer"
+        >
+          Login
+        </Button>
       </p>
 
       {/* <Link href="/dashboard"> */}

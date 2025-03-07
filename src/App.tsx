@@ -6,6 +6,9 @@ import SignUp from "app/signup/page";
 import Dashboard from "app/dashboard/page";
 import ProviderLayout from "components/Layouts/Provider";
 import EmailComposer from "app/Provider/EmailComposer";
+import LeadsManagement from "app/Provider/LeadsManagement";
+import Chat from "app/Provider/Chat";
+import ClientAuth from "app/Client/auth";
 
 const App = () => {
   const {
@@ -30,6 +33,14 @@ const App = () => {
             path="/email-composer"
             element={user ? <EmailComposer /> : <Navigate to="../auth" />}
           />
+          <Route
+            path="/leads-management"
+            element={user ? <LeadsManagement /> : <Navigate to="../auth" />}
+          />
+          <Route
+            path="/chat"
+            element={user ? <Chat /> : <Navigate to="../auth" />}
+          />
         </Routes>
       </ProviderLayout>
     );
@@ -40,6 +51,7 @@ const App = () => {
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
+      <Route path="/provider/:providerId/chat" element={<ClientAuth />} />
       <Route path="*" element={<Navigate to="../" />} />
     </Routes>
   );

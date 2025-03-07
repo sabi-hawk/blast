@@ -1,4 +1,3 @@
-"use client";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type User = {
@@ -29,26 +28,25 @@ type User = {
 };
 
 type AuthState = {
-  user: User | null;
+  user: User;
   token: string | null;
   loading: boolean; // Flag to track the loading state
 };
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  loading: false, // Initial state assumes no loading
-};
+// @ts-ignore
+const initialState: AuthState = {}
 
 const auth = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<AuthState>) => {
-      // Set user and token from payload and reset loading state
-      state.user = action.payload.user || null;
-      state.token = action.payload.token || null;
-      state.loading = false; // Reset loading state after setting user
+    setUser: (state, action: PayloadAction<Partial<AuthState>>) => {
+      console.log("Setting user:", action.payload.user);
+      if (action.payload.user) {
+        state.user = action.payload.user;
+        state.token = action.payload.token || null;
+      }
+      state.loading = false;
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       // Set the loading flag when an authentication request starts/ends
@@ -56,6 +54,7 @@ const auth = createSlice({
     },
     clearUser: (state) => {
       // Clear user and token, reset loading state
+      // @ts-ignore
       state.user = null;
       state.token = null;
       state.loading = false;

@@ -11,8 +11,9 @@
       "@models/*": ["src/models/*"],
       "@config/*": ["src/config/*"],
       "@utils/*": ["src/utils/*"],
-      "@controllers/*": ["src/controllers/*"],
-      "@routes/*": ["src/routes/*"]
+      "@controllers/*": ["src/api/controllers/*"],
+      "@routes/*": ["src/api/routes/*"],
+      "@middleware/*": ["src/api/middleware/*"]
     }
   },
   "include": ["src/**/*.ts"],   // Include all TypeScript files in src

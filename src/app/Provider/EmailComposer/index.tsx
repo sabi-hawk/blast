@@ -50,7 +50,7 @@ function EmailComposer() {
   const onLoad = async () => {
     setIsLoading(true);
     const { data } = await axios.get(
-      "http://localhost:3001/api/templates/design"
+      "http://localhost:8000/api/templates/design"
     );
     // @ts-ignore
     emailEditorRef.current.editor.loadDesign(data.design);
