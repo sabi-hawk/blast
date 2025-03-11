@@ -17,9 +17,10 @@ interface SignUpValues {
 interface SignUpFormProps {
   providerId?: string;
   setIsLogin?: Dispatch<SetStateAction<boolean>>;
+  role?: "client" | "provider" | "admin";
 }
 
-function SignUpForm({ providerId, setIsLogin }: SignUpFormProps) {
+function SignUpForm({ providerId, setIsLogin, role = "provider" }: SignUpFormProps) {
   const [form] = Form.useForm();
   const messageApi = useMessageApi(); // Ant Design message context
   const navigate = useNavigate();
@@ -27,7 +28,9 @@ function SignUpForm({ providerId, setIsLogin }: SignUpFormProps) {
   const handleSignUp = async (values: SignUpValues) => {
     try {
       // Simulate API call (replace with your actual API call)
-      const registerPayload = providerId ? { ...values, providerId } : values;
+      const registerPayload = providerId
+        ? { ...values, providerId, role }
+        : { ...values, role };
       const { status, data } = await register(registerPayload);
 
       if (status === 201) {

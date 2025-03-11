@@ -11,7 +11,7 @@ type User = {
   phone?: string;
   dob: string;
   gender: string;
-  role: string;
+  role: "provider" | "client" | "admin"; // Updated to match schema
   about: {
     city: string;
     country: string;

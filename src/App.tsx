@@ -5,6 +5,7 @@ import Login from "app/login/page";
 import SignUp from "app/signup/page";
 import Dashboard from "app/dashboard/page";
 import ProviderLayout from "components/Layouts/Provider";
+import ClientLayout from "components/Layouts/Client";
 import EmailComposer from "app/Provider/EmailComposer";
 import LeadsManagement from "app/Provider/LeadsManagement";
 import Chat from "app/Provider/Chat";
@@ -16,33 +17,54 @@ const App = () => {
   } = useAppState();
 
   if (user) {
+    if(user.role === "provider") {
+      return (
+        <ProviderLayout>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                user ? <Navigate to="/campaign" /> : <Navigate to="login" />
+              }
+            />
+            <Route
+              path="/campaign"
+              element={user ? <Dashboard /> : <Navigate to="../auth" />}
+            />
+            <Route
+              path="/email-composer"
+              element={user ? <EmailComposer /> : <Navigate to="../auth" />}
+            />
+            <Route
+              path="/leads-management"
+              element={user ? <LeadsManagement /> : <Navigate to="../auth" />}
+            />
+            <Route
+              path="/chat"
+              element={user ? <Chat /> : <Navigate to="../auth" />}
+            />
+          </Routes>
+        </ProviderLayout>
+      );
+    }
+
     return (
-      <ProviderLayout>
+      <ClientLayout>
         <Routes>
           <Route
             path="/"
-            element={
-              user ? <Navigate to="/campaign" /> : <Navigate to="login" />
-            }
-          />
-          <Route
-            path="/campaign"
-            element={user ? <Dashboard /> : <Navigate to="../auth" />}
-          />
-          <Route
-            path="/email-composer"
-            element={user ? <EmailComposer /> : <Navigate to="../auth" />}
-          />
-          <Route
-            path="/leads-management"
-            element={user ? <LeadsManagement /> : <Navigate to="../auth" />}
+            element={user ? <Navigate to="/chat" /> : <Navigate to="login" />}
           />
           <Route
             path="/chat"
             element={user ? <Chat /> : <Navigate to="../auth" />}
           />
+          <Route
+            path="*"
+            element={user ? <Navigate to="../chat" /> : <Navigate to="login" />}
+          />
         </Routes>
-      </ProviderLayout>
+      </ClientLayout>
     );
   }
 

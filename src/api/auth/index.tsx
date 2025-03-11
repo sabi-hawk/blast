@@ -10,6 +10,7 @@ type SignupPayload = {
   email: string;
   password: string;
   providerId?: string;
+  role: string;
 };
 export const login = (loginData: loginPayload) =>
   API.post("/auth/login", loginData);

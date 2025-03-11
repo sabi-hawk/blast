@@ -30,7 +30,7 @@ function SignUp({ setIsLogin, providerId }: SignUpProps) {
               Enter details to create account
             </p>
           </div>
-          <SignUpForm setIsLogin={setIsLogin} providerId={providerId} />
+          <SignUpForm setIsLogin={setIsLogin} providerId={providerId} role="client"/>
         </div>
 
         <div className="flex items-center justify-center w-full text-center my-4">

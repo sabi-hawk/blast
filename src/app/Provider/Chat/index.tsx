@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Avatar, Button, Col, Form, Input, Row } from "antd";
+import { Avatar, Button, Col, Form, Input, Row, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { getMessages, getUserConversations, sendUserMessage } from "api/conversation";
 import { useAppState } from "hooks";
@@ -13,6 +13,7 @@ function Chat() {
   const {
     auth: { user },
   } = useAppState();
+  const [buttonText, setButtonText] = useState("Copy");
   const [conversations, setConversations] = useState([]);
   const [leftSideBarUsers, setLeftSideBarUsers] = useState([]);
   const [activeChat, setActiveChat] = useState<any>(undefined);
@@ -122,16 +123,35 @@ function Chat() {
     setActiveChat({ conversation: relevantConversation, receiver: user });
   };
 
+  const handleCopy = () => {
+    const link = `http://localhost:3000/provider/${user._id}/chat`;
+
+    navigator.clipboard.writeText(link).then(() => {
+      setButtonText("Copied!");
+
+      // Reset the button text after 2 seconds
+      setTimeout(() => {
+        setButtonText("Copy");
+      }, 2000);
+    });
+  };
+
   return (
-    <Row className="!gap-y-[5px] flex flex-col" gutter={[16, 16]}>
-      <Row>
-        <div className="p-[12px_32px] text-[30px] font-medium">Messages</div>
+    <Row className="h-full flex flex-col" gutter={[16, 16]}>
+      <Row className="pl-8 pb-3">
+        <Space.Compact style={{ width: "100%" }}>
+          <Input
+            addonBefore="Chat Link:"
+            defaultValue={`http://localhost:3000/provider/${user._id}/chat`}
+            readOnly
+          />
+          <Button type="primary" onClick={handleCopy}>
+            {buttonText}
+          </Button>
+        </Space.Compact>
       </Row>
-      <Row>
-        <Col
-          className="pl-8 pr-4 h-[calc(100vh-85px)]"
-          span={8}
-        >
+      <Row className="flex-1 overflow-hidden">
+        <Col className="pl-8 pr-4" span={8}>
           <div className="h-full overflow-y-auto scrollbar-thin scrollbar-transparent flex flex-col rounded-[14px]">
             <div className="left-header">
               <div className="flex justify-between items-center bg-white px-2 py-0.5 border-b border-[#afb8cf]">
@@ -164,7 +184,6 @@ function Chat() {
                       />
                       <div className="w-[70%]">
                         <h3 className="m-0 text-[17px] whitespace-nowrap overflow-hidden text-ellipsis">{`${user.name.first} ${user.name.last}`}</h3>
-                        {/* <p className="p-tag-message">{user.lastMessage}</p> */}
                         <p className="m-0 text-[#afb8cf] whitespace-nowrap overflow-hidden text-ellipsis">{`matched ${getTimePassed(
                           getCreatedAt(user?._id)
                         )}`}</p>
@@ -180,10 +199,7 @@ function Chat() {
             </div>
           </div>
         </Col>
-        <Col
-          className="bg-[#f1f1f1] pr-8 flex flex-col"
-          span={16}
-        >
+        <Col className="bg-[#f1f1f1] pr-8 flex flex-col" span={16}>
           <div className="bg-white rounded-[14px] h-full flex flex-col">
             <ChatBox
               chat={activeChat}

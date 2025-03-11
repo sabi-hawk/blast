@@ -11,7 +11,12 @@ const UserSchema = new Schema({
   password: { type: String, required: true },
   phone: { type: String },
   dob: { type: String },
-  role: { type: String, default: "user" },
+  role: {
+    type: String,
+    enum: ["provider", "client", "admin"],
+    default: "provider",
+    required: true,
+  },
   loggedInAt: { type: Date },
   lastLoggedInAt: { type: Date },
   createdAt: { type: Date, default: Date.now },
