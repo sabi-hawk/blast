@@ -4,7 +4,7 @@ import Login from "./login";
 import { useParams } from "react-router-dom";
 
 function ClientAuth() {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const { providerId } = useParams<{ providerId: string }>() as {
     providerId: string;
   };
