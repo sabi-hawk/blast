@@ -21,40 +21,14 @@ function EmailComposer() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDesignSaving, setIsDesignSaving] = useState<boolean>(false);
 
-  useEffect(() => {
-    const getTemplateNames = async () => {
-      try {
-        const { data } = await getTemplatesNames(user?._id as string);
-        // setDesignNames(data.files);
-        dispatch(setTemplates(data.files));
-      } catch (err) {
-        console.log("Error | Composer | getDesigns", err);
-      }
-    };
-    getTemplateNames();
-  }, []);
+  
 
-  const handleSelectChange = async (value: string) => {
-    try {
-      const { data } = await getDesign(value);
-      emailEditorRef.current.editor.loadDesign(data.design);
-    } catch (err) {
-      console.log("Error | Composer | handleSelectChange", err);
-    }
-  };
-
+  
   const onSearch = (value: string) => {
     console.log("search:", value);
   };
 
-  const onLoad = async () => {
-    setIsLoading(true);
-    const { data } = await axios.get(
-      "http://localhost:8000/api/templates/design"
-    );
-    // @ts-ignore
-    emailEditorRef.current.editor.loadDesign(data.design);
-  };
+  
 
   const exportHtml = async () => {
     setIsDesignSaving(true);
