@@ -21,7 +21,18 @@ function EmailComposer() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDesignSaving, setIsDesignSaving] = useState<boolean>(false);
 
- 
+  useEffect(() => {
+    const getTemplateNames = async () => {
+      try {
+        const { data } = await getTemplatesNames(user?._id as string);
+        // setDesignNames(data.files);
+        dispatch(setTemplates(data.files));
+      } catch (err) {
+        console.log("Error | Composer | getDesigns", err);
+      }
+    };
+    getTemplateNames();
+  }, []);
 
   const handleSelectChange = async (value: string) => {
     try {
