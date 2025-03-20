@@ -43,18 +43,7 @@ function EmailComposer() {
     }
   };
 
-  const onSearch = (value: string) => {
-    console.log("search:", value);
-  };
-
-  const onLoad = async () => {
-    setIsLoading(true);
-    const { data } = await axios.get(
-      "http://localhost:8000/api/templates/design"
-    );
-    // @ts-ignore
-    emailEditorRef.current.editor.loadDesign(data.design);
-  };
+  
 
   const exportHtml = async () => {
     setIsDesignSaving(true);
