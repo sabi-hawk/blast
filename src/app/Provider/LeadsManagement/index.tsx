@@ -70,7 +70,16 @@ const columns: TableColumnsType<DataType> = [
   },
 ];
 
-
+const data: DataType[] = Array.from({ length: 50 }).map((_, i) => ({
+  key: i,
+  groupId: `GID-${1000 + i}`,
+  groupName: `Group ${i + 1}`,
+  email: `group${i + 1}@example.com`,
+  phone: `+123456789${i}`,
+  time: "10:00 AM",
+  tags: i % 2 === 0 ? ["Active", "Verified"] : ["Pending"],
+  description: `This is group ${i + 1}.`,
+}));
 
 const handleEdit = (key: React.Key) => {
   console.log("Edit record", key);
