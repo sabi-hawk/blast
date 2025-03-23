@@ -81,13 +81,7 @@ const data: DataType[] = Array.from({ length: 50 }).map((_, i) => ({
   description: `This is group ${i + 1}.`,
 }));
 
-const handleEdit = (key: React.Key) => {
-  console.log("Edit record", key);
-};
 
-const handleDelete = (key: React.Key) => {
-  console.log("Delete record", key);
-};
 
 function LeadsManagement() {
   return (
