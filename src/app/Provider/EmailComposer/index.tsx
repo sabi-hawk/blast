@@ -21,6 +21,7 @@ function EmailComposer() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDesignSaving, setIsDesignSaving] = useState<boolean>(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
 
   useEffect(() => {
     const getTemplateNames = async () => {
@@ -35,10 +36,13 @@ function EmailComposer() {
     getTemplateNames();
   }, []);
 
-  const handleSelectChange = async (value: string) => {
+  const handleSelectChange = async (value: string, option: any) => {
     try {
-      const { data } = await getDesign(value);
+      const { data } = await getDesign(option?.id);
       emailEditorRef.current.editor.loadDesign(data.design);
+      setSelectedTemplateId(option.id); // Save the ID
+      setSelectedTemplate(value);
+      setTemplateName(value);
     } catch (err) {
       console.log("Error | Composer | handleSelectChange", err);
     }
@@ -66,6 +70,7 @@ function EmailComposer() {
     };
     emailEditorRef.current.editor.loadDesign(emptyDesign);
     setSelectedTemplate(undefined); // Reset the dropdown
+    setSelectedTemplateId(null);
     setTemplateName("New Template"); // Optional: reset template name
   };
 
@@ -75,12 +80,17 @@ function EmailComposer() {
     emailEditorRef?.current?.editor?.exportHtml(async (data: HtmlExport) => {
       const { design, html } = data;
       try {
-        const { data } = await saveTemplate(
-          user?._id as string,
-          design,
-          html,
-          templateName
-        );
+        const saveFn = selectedTemplateId
+          ? saveTemplate(
+              user?._id as string,
+              design,
+              html,
+              templateName,
+              selectedTemplateId
+            ) // update
+          : saveTemplate(user?._id as string, design, html, templateName); // create
+
+        const { data } = await saveFn;
         setIsDesignSaving(false);
         dispatch(setTemplates(data.files));
         messageApi.success(data.message);
@@ -146,7 +156,7 @@ function EmailComposer() {
           <Row className="gap-[10px] p-[10px] justify-between">
             <Col>
               <Input
-                className="w-auto"
+                className="w-[225px]"
                 placeholder="Basic usage"
                 value={templateName}
                 onChange={(e) => setTemplateName(e.target.value)}
@@ -154,24 +164,21 @@ function EmailComposer() {
             </Col>
             <Col className="gap-[10px] flex">
               <Select
+                className="w-[175px]"
                 showSearch
                 placeholder="Choose Design"
-                optionFilterProp="label"
                 value={selectedTemplate}
-                onChange={(value) => {
-                  setSelectedTemplate(value);
-                  handleSelectChange(value);
-                   setTemplateName(value);
+                onChange={(value, option) => {
+                  handleSelectChange(value, option); // Pass both value and option
                 }}
                 onSearch={onSearch}
-                options={meta?.templates?.map((template) => {
-                  return {
-                    label: template.includes("design")
-                      ? template.split(".")[0]
-                      : template.split(".")[1],
-                    value: template,
-                  };
-                })}
+                options={meta?.templates?.map((template) => ({
+                  label: template.name?.includes("design")
+                    ? template.name?.split(".")[0]
+                    : template.name?.split(".")[1],
+                  value: template.name,
+                  id: template._id,
+                }))}
               />
 
               <Button icon={<DeleteOutlined />} onClick={loadEmptyDesign}>
