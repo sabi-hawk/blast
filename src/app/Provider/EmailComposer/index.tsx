@@ -1,10 +1,10 @@
+import { useEffect, useRef, useState } from "react";
 import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
 import { Button, Col, Input, Row, Select } from "antd";
 import { getDesign, getTemplatesNames, saveTemplate } from "api/templates";
 import axios from "axios";
 import { setTemplates } from "flux/reducers/meta";
 import { useAppState } from "hooks";
-import React, { useEffect, useRef, useState } from "react";
 import EmailEditor from "react-email-editor";
 import { useDispatch } from "react-redux";
 import { useMessageApi } from "utils";
@@ -20,6 +20,7 @@ function EmailComposer() {
   const emailEditorRef: any = useRef(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDesignSaving, setIsDesignSaving] = useState<boolean>(false);
+  const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const getTemplateNames = async () => {
@@ -48,12 +49,24 @@ function EmailComposer() {
   };
 
   const onLoad = async () => {
-    setIsLoading(true);
-    const { data } = await axios.get(
-      "http://localhost:8000/api/templates/design"
-    );
-    // @ts-ignore
-    emailEditorRef.current.editor.loadDesign(data.design);
+    // setIsLoading(true);
+    // const { data } = await axios.get(
+    //   "http://localhost:8000/api/templates/design"
+    // );
+    // // @ts-ignore
+    // emailEditorRef.current.editor.loadDesign(data.design);
+  };
+
+  const loadEmptyDesign = () => {
+    const emptyDesign = {
+      body: {
+        rows: [],
+        values: {},
+      },
+    };
+    emailEditorRef.current.editor.loadDesign(emptyDesign);
+    setSelectedTemplate(undefined); // Reset the dropdown
+    setTemplateName("New Template"); // Optional: reset template name
   };
 
   const exportHtml = async () => {
@@ -68,9 +81,9 @@ function EmailComposer() {
           html,
           templateName
         );
+        setIsDesignSaving(false);
         dispatch(setTemplates(data.files));
         messageApi.success(data.message);
-        setIsDesignSaving(false);
       } catch (err) {
         console.log("Error | Composer | ExportHTML", err);
       }
@@ -144,9 +157,14 @@ function EmailComposer() {
                 showSearch
                 placeholder="Choose Design"
                 optionFilterProp="label"
-                onChange={handleSelectChange}
+                value={selectedTemplate}
+                onChange={(value) => {
+                  setSelectedTemplate(value);
+                  handleSelectChange(value);
+                   setTemplateName(value);
+                }}
                 onSearch={onSearch}
-                options={meta?.templates.map((template) => {
+                options={meta?.templates?.map((template) => {
                   return {
                     label: template.includes("design")
                       ? template.split(".")[0]
@@ -155,10 +173,8 @@ function EmailComposer() {
                   };
                 })}
               />
-              <Button
-                icon={<DeleteOutlined />}
-                onClick={(event) => loadDesign(event, "")}
-              >
+
+              <Button icon={<DeleteOutlined />} onClick={loadEmptyDesign}>
                 Empty
               </Button>
               <Button
