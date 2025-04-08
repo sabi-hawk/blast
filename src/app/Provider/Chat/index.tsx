@@ -183,7 +183,7 @@ function Chat() {
                         src={<img src={user?.about?.profilePic} alt="avatar" />}
                       />
                       <div className="w-[70%]">
-                        <h3 className="m-0 text-[17px] whitespace-nowrap overflow-hidden text-ellipsis">{`${user.name.first} ${user.name.last}`}</h3>
+                        <h3 className="m-0 text-[17px] whitespace-nowrap overflow-hidden text-ellipsis">{`${user.username} ${user.name.last}`}</h3>
                         <p className="m-0 text-[#afb8cf] whitespace-nowrap overflow-hidden text-ellipsis">{`matched ${getTimePassed(
                           getCreatedAt(user?._id)
                         )}`}</p>
