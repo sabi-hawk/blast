@@ -106,7 +106,7 @@ function Chat() {
       // @ts-ignore
       return relevantConversation.createdAt;
     } else {
-      // Handle the case when no relevant conversation is found
+      // Handle the case when no relevant conversation is found here
       return null;
     }
   };
