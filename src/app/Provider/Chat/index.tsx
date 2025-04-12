@@ -22,13 +22,7 @@ function Chat() {
   const [sendMessage, setSendMessage] = useState(null);
   const [receiveMessage, setReceiveMessage] = useState(null);
 
-  // initializing socket
-  useEffect(() => {
-    socket.emit("new-user-add", user._id);
-    socket.on("get-users", (users: any) => {
-      setOnlineUsers(users);
-    });
-  }, [user]); // [user]
+  
 
   useEffect(() => {
     // adding event listener for window unload
