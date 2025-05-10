@@ -5,7 +5,12 @@ import {
   SearchOutlined,
   PlusOutlined,
   FilterOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
+import axios from "axios";
+import { useMessageApi } from "utils";
+import { saveLeads } from "api/leads";
+import { useAppState } from "hooks";
 
 interface DataType {
   key: React.Key;
@@ -90,6 +95,28 @@ const handleDelete = (key: React.Key) => {
 };
 
 function LeadsManagement() {
+  const {
+    auth: { user },
+  } = useAppState();
+
+  const messageApi = useMessageApi(); 
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const { data } = await saveLeads(user?._id, formData);
+      messageApi.success(data.message);
+      // Optionally refetch leads
+    } catch (err: any) {
+      console.error(err);
+      messageApi.error("Failed to import leads");
+    }
+  };
+
   return (
     <div>
       <div className="flex justify-between p-[20px] bg-[#DAE1F3]">
@@ -103,18 +130,22 @@ function LeadsManagement() {
             placeholder="Search"
           />
         </div>
-        <div className="flex gap-[10px]">
-          <Tooltip title="Add">
-            <Button>
-              <img
-                src="/assets/icons/import.svg"
-                alt="Import Icon"
-                width={17}
-                height={17}
-              />
+        <div className="flex gap-[10px] items-center">
+          <Tooltip title="Import Leads">
+            <Button
+              icon={<UploadOutlined />}
+              onClick={() => document.getElementById("fileInput")?.click()}
+            >
               Import Leads
             </Button>
           </Tooltip>
+          <input
+            type="file"
+            id="fileInput"
+            accept=".xlsx, .xls"
+            style={{ display: "none" }}
+            onChange={handleFileUpload}
+          />
         </div>
       </div>
       <Table<DataType>

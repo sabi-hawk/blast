@@ -80,38 +80,6 @@ function Dashboard() {
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
-      {/* Top Navbar */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-6">
-          <img src="/logo.png" alt="Logo" className="w-10 h-10" />
-          <Button className="bg-black text-white">Campaigns</Button>
-          <span>Lead Management</span>
-          <span>Email Composer</span>
-          <span>Analytics</span>
-          <span>Chat Box</span>
-          <span>Edit Profile</span>
-        </div>
-        <div className="flex items-center gap-4">
-          <Input
-            placeholder="Search"
-            prefix={<SearchOutlined />}
-            className="w-64"
-          />
-          <Button
-            type="text"
-            icon={<BellOutlined />}
-            className="text-xl cursor-pointer"
-            onClick={() => console.log("Bell clicked!")}
-          />
-          <Button
-            type="text"
-            icon={<UserOutlined />}
-            className="text-xl cursor-pointer"
-            onClick={() => console.log("user profile clicked!")}
-          />
-          <Button onClick={handleLogout}>Logout</Button>
-        </div>
-      </div>
 
       {/* Campaign Navigation Buttons */}
       <Row gutter={[16, 16]} className="mb-6">
