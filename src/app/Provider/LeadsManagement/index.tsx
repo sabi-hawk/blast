@@ -1,105 +1,90 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Table, Tag, Space, Button, Input, Tooltip } from "antd";
-import type { TableColumnsType } from "antd";
-import {
-  SearchOutlined,
-  PlusOutlined,
-  FilterOutlined,
-  UploadOutlined,
-} from "@ant-design/icons";
+import type { TableColumnsType, TablePaginationConfig } from "antd";
+import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import { useMessageApi } from "utils";
-import { saveLeads } from "api/leads";
+import { deleteLead, getLeads, saveLeads, updateLead } from "api/leads";
 import { useAppState } from "hooks";
+import EditLeadModal from "components/Modals/EditLeadModal";
 
-interface DataType {
-  key: React.Key;
+interface LeadType {
+  _id: string;
   groupId: string;
   groupName: string;
   email: string;
   phone: string;
-  time: string;
+  createdAt: string;
   tags: string[];
   description: string;
 }
 
-const columns: TableColumnsType<DataType> = [
-  { title: "Group Id", dataIndex: "groupId" },
-  { title: "Group Name", dataIndex: "groupName" },
-  { title: "Email", dataIndex: "email" },
-  { title: "Phone", dataIndex: "phone" },
-  { title: "Time", dataIndex: "time" },
-  {
-    title: "Tags",
-    dataIndex: "tags",
-    render: (tags: string[]) => (
-      <>
-        {tags.map((tag) => (
-          <Tag color="blue" key={tag}>
-            {tag}
-          </Tag>
-        ))}
-      </>
-    ),
-  },
-  { title: "Description", dataIndex: "description" },
-  {
-    title: "Action",
-    dataIndex: "action",
-    render: (_, record) => (
-      <Space size="middle">
-        <Button
-          className="w-auto h-auto p-0 border-0"
-          onClick={() => handleEdit(record.key)}
-        >
-          <img
-            src="/assets/icons/edit.svg"
-            alt="Edit Icon"
-            width={20}
-            height={20}
-          />
-        </Button>
-        <Button
-          className="w-auto h-auto p-0 border-0"
-          onClick={() => handleDelete(record.key)}
-        >
-          <img
-            src="/assets/icons/delete.svg"
-            alt="Delete Icon"
-            width={20}
-            height={20}
-          />
-        </Button>
-      </Space>
-    ),
-  },
-];
+interface ApiResponse {
+  data: LeadType[];
+  pagination: {
+    total: number;
+    totalPages: number;
+    currentPage: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
 
-const data: DataType[] = Array.from({ length: 50 }).map((_, i) => ({
-  key: i,
-  groupId: `GID-${1000 + i}`,
-  groupName: `Group ${i + 1}`,
-  email: `group${i + 1}@example.com`,
-  phone: `+123456789${i}`,
-  time: "10:00 AM",
-  tags: i % 2 === 0 ? ["Active", "Verified"] : ["Pending"],
-  description: `This is group ${i + 1}.`,
-}));
-
-const handleEdit = (key: React.Key) => {
-  console.log("Edit record", key);
-};
-
-const handleDelete = (key: React.Key) => {
-  console.log("Delete record", key);
-};
-
-function LeadsManagement() {
+const LeadsManagement = () => {
   const {
     auth: { user },
   } = useAppState();
 
-  const messageApi = useMessageApi(); 
+  const messageApi = useMessageApi();
+
+  const [leads, setLeads] = useState<LeadType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<TablePaginationConfig>({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+    showSizeChanger: true,
+  });
+
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<LeadType | null>(null);
+
+  const openEditModal = (lead: LeadType) => {
+    setSelectedLead(lead);
+    setEditModalOpen(true);
+  };
+
+  const onEditSuccess = () => {
+    // Refresh leads list here
+  };
+
+  const fetchLeads = async (page = 1, limit = 10) => {
+    setLoading(true);
+    try {
+      const { data } = await getLeads(page, limit);
+      setLeads(data.data);
+      setPagination((prev) => ({
+        ...prev,
+        total: data.pagination?.total,
+        current: data.pagination?.currentPage,
+        pageSize: limit,
+      }));
+    } catch (error) {
+      console.error("Failed to fetch leads:", error);
+      messageApi.error("Error loading leads");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchLeads(pagination.current!, pagination.pageSize!);
+  }, []);
+
+  const handleTableChange = (pagination: TablePaginationConfig) => {
+    fetchLeads(pagination.current!, pagination.pageSize!);
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -110,12 +95,102 @@ function LeadsManagement() {
     try {
       const { data } = await saveLeads(user?._id, formData);
       messageApi.success(data.message);
-      // Optionally refetch leads
+      fetchLeads(pagination.current!, pagination.pageSize!); // refresh data
     } catch (err: any) {
       console.error(err);
       messageApi.error("Failed to import leads");
     }
   };
+
+  const handleEdit = async (leadId: string) => {
+    // For simplicity, just prompt for new description (you can enhance this with a modal/form)
+    const newDescription = prompt("Enter new description:");
+    if (newDescription === null) return; // cancel pressed
+
+    try {
+      await updateLead(leadId, { description: newDescription });
+      messageApi.success("Lead updated successfully");
+      fetchLeads(pagination.current!, pagination.pageSize!);
+    } catch (err) {
+      console.error(err);
+      messageApi.error("Failed to update lead");
+    }
+  };
+
+  const handleDelete = async (leadId: string) => {
+    if (!window.confirm("Are you sure you want to delete this lead?")) return;
+
+    try {
+      await deleteLead(leadId);
+      messageApi.success("Lead deleted successfully");
+      fetchLeads(pagination.current!, pagination.pageSize!);
+    } catch (err) {
+      console.error(err);
+      messageApi.error("Failed to delete lead");
+    }
+  };
+
+  const columns: TableColumnsType<LeadType> = [
+    { title: "Group Id", dataIndex: "groupId" },
+    { title: "Group Name", dataIndex: "groupName" },
+    { title: "Email", dataIndex: "email" },
+    { title: "Phone", dataIndex: "phone" },
+    {
+      title: "Date",
+      dataIndex: "createdAt",
+      render: (createdAt: string) => {
+        const date = new Date(createdAt);
+        return date.toLocaleString(); // You can customize format here
+      },
+    },
+    {
+      title: "Tags",
+      dataIndex: "tags",
+      render: (tags: string) => {
+        const tagList = tags?.split(",").map((tag) => tag.trim()) || [];
+        return (
+          <>
+            {tagList.map((tag) => (
+              <Tag color="blue" key={tag}>
+                {tag}
+              </Tag>
+            ))}
+          </>
+        );
+      },
+    },
+    { title: "Description", dataIndex: "description" },
+    {
+      title: "Action",
+      dataIndex: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button
+            className="w-auto h-auto p-0 border-0"
+            onClick={() => openEditModal(record)}
+          >
+            <img
+              src="/assets/icons/edit.svg"
+              alt="Edit Icon"
+              width={20}
+              height={20}
+            />
+          </Button>
+          <Button
+            className="w-auto h-auto p-0 border-0"
+            onClick={() => handleDelete(record._id)}
+          >
+            <img
+              src="/assets/icons/delete.svg"
+              alt="Delete Icon"
+              width={20}
+              height={20}
+            />
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
   return (
     <div>
@@ -148,14 +223,26 @@ function LeadsManagement() {
           />
         </div>
       </div>
-      <Table<DataType>
+      <Table<LeadType>
         rowSelection={{ type: "checkbox", columnWidth: "50px" }}
         columns={columns}
-        dataSource={data}
-        pagination={{ showSizeChanger: true, pageSize: 10 }}
+        dataSource={leads}
+        loading={loading}
+        pagination={pagination}
+        onChange={handleTableChange}
+        rowKey="_id"
+      />
+      <EditLeadModal
+        open={editModalOpen}
+        setOpen={setEditModalOpen}
+        leadData={selectedLead}
+        onSuccess={() => {
+          fetchLeads(pagination.current!, pagination.pageSize!); // refresh table
+          setSelectedLead(null); // clear after edit
+        }}
       />
     </div>
   );
-}
+};
 
 export default LeadsManagement;
