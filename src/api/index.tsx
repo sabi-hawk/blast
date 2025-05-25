@@ -4,7 +4,7 @@ import { clearUser, setUser } from "../flux/reducers/auth";
 // import { setChatsData } from "flux/reducers/chat";
 // import { setTemplates } from "../flux/reducers/extras";
 
-const API = axios.create({ baseURL: "http://localhost:8000/api" });
+const API = axios.create({ baseURL: "http://localhost:8001/api" });
 
 API.interceptors.request.use(
   (config) => {

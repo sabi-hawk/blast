@@ -139,7 +139,7 @@ function Chat() {
   return (
     <Row className="h-full flex flex-col" gutter={[16, 16]}>
       <Row className="pl-8 pb-3">
-        <Space.Compact style={{ width: "100%" }}>
+        <Space.Compact style={{ width: "50%" }}>
           <Input
             addonBefore="Chat Link:"
             defaultValue={`http://localhost:3000/provider/${user._id}/chat`}
@@ -152,14 +152,10 @@ function Chat() {
       </Row>
       <Row className="flex-1 overflow-hidden">
         <Col className="pl-8 pr-4" span={8}>
-          <div className="h-full overflow-y-auto scrollbar-thin scrollbar-transparent flex flex-col rounded-[14px]">
+          <div className="bg-white h-full overflow-y-auto scrollbar-thin scrollbar-transparent flex flex-col rounded-[14px]">
             <div className="left-header">
-              <div className="flex justify-between items-center bg-white px-2 py-0.5 border-b border-[#afb8cf]">
+              <div className="flex justify-between items-center bg-white border-b border-[#afb8cf] p-[10px]">
                 <h3> All Messages</h3>
-
-                <Button>
-                  <i className="icon-dots"></i>
-                </Button>
               </div>
 
               <div className="border-b border-[#afb8cf] bg-white p-[16px_19px]">
@@ -180,10 +176,17 @@ function Chat() {
                     <div className="flex items-center gap-[15px] w-[80%]">
                       <Avatar
                         className="!w-[50px] !h-[50px]"
-                        src={<img src={user?.about?.profilePic} alt="avatar" />}
-                      />
+                        src={user?.profilePic}
+                        alt={user?.username}
+                        onError={() => {
+                          // If image fails to load, show first letter of username
+                          return true;
+                        }}
+                      >
+                        {user?.username?.charAt(0)?.toUpperCase()}
+                      </Avatar>
                       <div className="w-[70%]">
-                        <h3 className="m-0 text-[17px] whitespace-nowrap overflow-hidden text-ellipsis">{`${user.username} ${user.name.last}`}</h3>
+                        <h3 className="m-0 text-[17px] whitespace-nowrap overflow-hidden text-ellipsis">{`${user.username}`}</h3>
                         <p className="m-0 text-[#afb8cf] whitespace-nowrap overflow-hidden text-ellipsis">{`matched ${getTimePassed(
                           getCreatedAt(user?._id)
                         )}`}</p>

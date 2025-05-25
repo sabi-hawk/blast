@@ -65,20 +65,28 @@ const messageApi = useMessageApi();
           <div className="flex items-center justify-between p-2.5 border-b border-[#afb8cf]">
             <div className="flex items-center gap-[13px]">
               <Avatar
-                className="w-[50px] h-[50px] rounded-[14px]"
-                src={<img src={chat.receiver.about.profilePic} alt="avatar" />}
-              />
-              <h3 className="text-[19px] m-0">{`${chat.receiver.name.first} ${chat.receiver.name.last}`}</h3>
+                className="!w-[50px] !h-[50px]"
+                src={user?.about?.profilePic}
+                alt={user?.username}
+                onError={() => {
+                  // If image fails to load, show first letter of username
+                  return true;
+                }}
+              >
+                {chat?.receiver?.username?.charAt(0)?.toUpperCase()}
+              </Avatar>
+              <h3 className="text-h3 m-0">{`${chat.receiver?.username}`}</h3>
             </div>
 
             <Button className="border-none shadow-[1px_0px_5px_rgba(169,169,169,0.5),-2px_0px_5px_rgba(169,169,169,0.5),0px_2px_5px_rgba(169,169,169,0.5)] flex items-center">
               <i className="icon-favorite"></i>
             </Button>
           </div>
-          <div className="scroll-hide">
-            <p className="text-[#AFB8CF] text-center">
-              Today | 06:32 PM
-            </p>
+          <div
+            className="scroll-hide flex-grow overflow-y-scroll"
+            style={{ height: "calc(100vh - 240px)" }}
+          >
+            <p className="text-[#AFB8CF] text-center">Today | 06:32 PM</p>
 
             {messages.map((message: any) => (
               <div
@@ -96,7 +104,7 @@ const messageApi = useMessageApi();
           </div>
 
           <div className="flex pt-[15px] pb-[15px] border-t border-[#afb8cf]">
-            <Button>
+            <Button className="border-none">
               <i className="icon-emoji"></i>
             </Button>
             <Input
@@ -104,7 +112,7 @@ const messageApi = useMessageApi();
               value={currMessage}
               onChange={(e) => setCurMessage(e.target.value)}
             />
-            <Button onClick={handleSend}>
+            <Button onClick={handleSend} className="border-none">
               <i className="icon-send"></i>
             </Button>
           </div>
