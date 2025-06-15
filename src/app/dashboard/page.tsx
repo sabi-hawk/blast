@@ -23,12 +23,14 @@ import {
   Settings,
   ChevronDown,
 } from "lucide-react";
+import CampaignModal from "components/Modals/CampaignModal";
 
 function Dashboard() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
     React.useState(false);
+  const [campaignModalOpen, setCampaignModalOpen] = React.useState(false);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -191,7 +193,7 @@ function Dashboard() {
                 stat.isNew ? "col-span-1 md:col-span-2 lg:col-span-1" : ""
               }`}
               onClick={
-                stat.isNew ? () => setIsNewCampaignModalOpen(true) : undefined
+                stat.isNew ? () => setCampaignModalOpen(true) : undefined
               }
             >
               <div
@@ -241,16 +243,7 @@ function Dashboard() {
           );
         })}
       </div>
-      <Modal
-        open={isNewCampaignModalOpen}
-        onCancel={handleCloseNewCampaignModal}
-        footer={null}
-        title="Create New Campaign"
-        centered
-      >
-        {/* Content will be added later */}
-        <div style={{ minHeight: 100 }}>Coming soon...</div>
-      </Modal>
+      <CampaignModal open={campaignModalOpen} setOpen={setCampaignModalOpen} />
       {/* Campaign Data Table */}
       <Table
         columns={columns}
