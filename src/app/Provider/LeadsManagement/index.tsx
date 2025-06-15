@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Table, Tag, Space, Button, Input, Tooltip } from "antd";
+import { Table, Tag, Space, Button, Input, Tooltip, Spin } from "antd";
 import type { TableColumnsType, TablePaginationConfig } from "antd";
 import { SearchOutlined, UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
@@ -223,15 +223,16 @@ const LeadsManagement = () => {
           />
         </div>
       </div>
-      <Table<LeadType>
-        rowSelection={{ type: "checkbox", columnWidth: "50px" }}
-        columns={columns}
-        dataSource={leads}
-        loading={loading}
-        pagination={pagination}
-        onChange={handleTableChange}
-        rowKey="_id"
-      />
+      <Spin spinning={loading} size="large">
+        <Table<LeadType>
+          rowSelection={{ type: "checkbox", columnWidth: "50px" }}
+          columns={columns}
+          dataSource={leads}
+          pagination={pagination}
+          onChange={handleTableChange}
+          rowKey="_id"
+        />
+      </Spin>
       <EditLeadModal
         open={editModalOpen}
         setOpen={setEditModalOpen}

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { DeleteOutlined, SaveOutlined } from "@ant-design/icons";
-import { Button, Col, Input, Row, Select } from "antd";
+import { Button, Col, Input, Row, Select, Spin } from "antd";
 import { getDesign, getTemplatesNames, saveTemplate } from "api/templates";
 import axios from "axios";
 import { setTemplates } from "flux/reducers/meta";
@@ -18,10 +18,11 @@ function EmailComposer() {
   const messageApi = useMessageApi();
   const [templateName, setTemplateName] = useState("New Template");
   const emailEditorRef: any = useRef(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isDesignSaving, setIsDesignSaving] = useState<boolean>(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | undefined>(undefined);
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [isEditorLoading, setIsEditorLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const getTemplateNames = async () => {
@@ -111,6 +112,7 @@ function EmailComposer() {
   const onReady = async () => {
     // editor is ready
     setIsLoading(false);
+    setIsEditorLoading(false);
     // @ts-ignore
     emailEditorRef.current.editor.registerCallback(
       "image",
@@ -142,15 +144,6 @@ function EmailComposer() {
 
   return (
     <>
-      {isLoading && (
-        <div className="effect-loading">
-          <div className="spinner-border text-primary" role="status">
-            <span className="sr-only">Loading...</span>
-          </div>
-          {"  "}
-          Loading ...
-        </div>
-      )}
       <Row className={isLoading ? "d-none" : "composer-parent h-full"}>
         <Col className="w-full flex flex-col">
           <Row className="gap-[10px] p-[10px] justify-between">
@@ -193,7 +186,12 @@ function EmailComposer() {
               </Button>
             </Col>
           </Row>
-          <Row className="email-editor flex-grow">
+          <Row className="email-editor flex-grow relative">
+            {isEditorLoading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 z-10">
+                <Spin size="large" />
+              </div>
+            )}
             <EmailEditor
               ref={emailEditorRef}
               onLoad={onLoad}
