@@ -1,5 +1,9 @@
 import { Modal, Form, Select, Input, Button, Switch, DatePicker, message } from "antd";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { getTemplatesNames } from "api/templates";
+import { getGroupsSummary } from "api/leads";
+import { addCampaign } from "api/campaigns";
+import { useAppState } from "hooks";
 
 interface CampaignModalProps {
   open: boolean;
@@ -9,22 +13,54 @@ interface CampaignModalProps {
 
 const { Option } = Select;
 
-const templateOptions = [
-  { label: "Template 1", value: "template1" },
-  { label: "Template 2", value: "template2" },
-  { label: "Template 3", value: "template3" },
-];
-
-const groupOptions = [
-  { label: "Group 1000", value: "group1000" },
-  { label: "Group 1001", value: "group1001" },
-  { label: "Group 1002", value: "group1002" },
-];
-
 function CampaignModal({ open, setOpen, onSubmit }: CampaignModalProps) {
   const [form] = Form.useForm();
   const [selectedGroups, setSelectedGroups] = useState<string[]>([]);
   const [isScheduled, setIsScheduled] = useState(false);
+  const { auth: { user } } = useAppState();
+  const [templateOptions, setTemplateOptions] = useState<{ label: string, value: string, id: string }[]>([]);
+  const [groupOptions, setGroupOptions] = useState<{ label: string, value: string; count: number }[]>([]);
+
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      if (!user?._id) return;
+      try {
+        const { data } = await getTemplatesNames(user._id);
+        setTemplateOptions(
+          data.files.map((template: any) => ({
+            label: template.name?.includes("design")
+              ? template.name?.split(".")[0]
+              : template.name?.split(".")[1],
+            value: template.name,
+            id: template._id,
+          }))
+        );
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchTemplates();
+  }, [user?._id]);
+
+  useEffect(() => {
+    const fetchGroups = async () => {
+      try {
+        const response = await getGroupsSummary();
+        if (response && response.data && Array.isArray(response.data.groups)) {
+          setGroupOptions(
+            response.data.groups.map((group: any) => ({
+              label: `${group.groupId} (${group.count})`,
+              value: group.groupId,
+              count: group.count,
+            }))
+          );
+        }
+      } catch (err) {
+        // Optionally handle error
+      }
+    };
+    fetchGroups();
+  }, []);
 
   const handleGroupsChange = (values: string[]) => {
     setSelectedGroups(values);
@@ -37,14 +73,40 @@ function CampaignModal({ open, setOpen, onSubmit }: CampaignModalProps) {
     }
   };
 
-  const handleFinish = (values: any) => {
-    if (onSubmit) onSubmit(values);
-    message.success("Campaign data ready to submit!");
+  const handleFinish = async (values: any) => {
+    try {
+      // Find the selected template's id
+      const selectedTemplate = templateOptions.find(
+        (t) => t.value === values.template
+      );
+      const payload = {
+        ...values,
+        template: {
+          id: selectedTemplate?.id,
+          name: selectedTemplate?.value || selectedTemplate?.label,
+        },
+        groupIds: values.groups,
+        scheduled: isScheduled,
+      };
+      delete payload.groups;
+
+      await addCampaign(payload);
+      message.success("Campaign created successfully!");
+      if (onSubmit) onSubmit(values);
+    } catch (err: any) {
+      message.error(err?.response?.data?.message || "Failed to create campaign");
+    }
     setOpen(false);
     form.resetFields();
     setSelectedGroups([]);
     setIsScheduled(false);
   };
+
+  // Calculate total leads from selected groups
+  const totalLeads = selectedGroups.reduce((sum, groupId) => {
+    const group = groupOptions.find((g) => g.value === groupId);
+    return sum + (group ? group.count : 0);
+  }, 0);
 
   return (
     <Modal
@@ -61,28 +123,40 @@ function CampaignModal({ open, setOpen, onSubmit }: CampaignModalProps) {
         initialValues={{ schedule: false }}
       >
         <Form.Item
-          label="Email Template"
-          name="template"
-          rules={[{ required: true, message: "Please select a template" }]}
+          label="Campaign Name"
+          name="campaignName"
+          rules={[{ required: true, message: "Please enter a campaign name" }]}
         >
-          <Select placeholder="Choose Email Template" options={templateOptions} />
+          <Input placeholder="Enter campaign name" />
         </Form.Item>
 
-        <Form.Item
-          label="Lead Groups"
-          name="groups"
-          rules={[{ required: true, message: "Please select at least one group" }]}
-        >
-          <Select
-            mode="multiple"
-            placeholder="Select Lead Groups"
-            options={groupOptions}
-            onChange={handleGroupsChange}
-          />
-        </Form.Item>
+        <div style={{ display: 'flex', gap: 16 }}>
+          <Form.Item
+            label="Email Template"
+            name="template"
+            rules={[{ required: true, message: "Please select a template" }]}
+            style={{ flex: 1 }}
+          >
+            <Select placeholder="Choose Email Template" options={templateOptions} />
+          </Form.Item>
+
+          <Form.Item
+            label="Lead Groups"
+            name="groups"
+            rules={[{ required: true, message: "Please select at least one group" }]}
+            style={{ flex: 1 }}
+          >
+            <Select
+              mode="multiple"
+              placeholder="Select Lead Groups"
+              options={groupOptions}
+              onChange={handleGroupsChange}
+            />
+          </Form.Item>
+        </div>
         {selectedGroups.length > 0 && (
           <div style={{ marginBottom: 16, color: '#1677ff', fontWeight: 500 }}>
-            Gathered {selectedGroups.length * 10} leads
+            Gathered {totalLeads} leads
           </div>
         )}
 

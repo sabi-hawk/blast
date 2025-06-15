@@ -61,7 +61,13 @@ const LeadsManagement = () => {
   const fetchLeads = async (page = 1, limit = 10) => {
     setLoading(true);
     try {
-      const { data } = await getLeads(page, limit);
+      const response = await getLeads(page, limit);
+      if (!response || response.status === 401) {
+        // Show server message if available, else fallback
+        messageApi.error(response?.data?.message || "Unauthorized or session expired");
+        return;
+      }
+      const { data } = response;
       setLeads(data.data);
       setPagination((prev) => ({
         ...prev,

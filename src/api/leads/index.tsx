@@ -21,3 +21,6 @@ export const updateLead = (leadId: string, data: Partial<any>) =>
 
 export const deleteLead = (leadId: string) =>
   API.delete(`leads/${leadId}`);
+
+export const getGroupsSummary = () =>
+  API.get("/leads/groups/summary");

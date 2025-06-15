@@ -1,10 +1,12 @@
-import React from "react";
-import { Table, Button, Row, Col, Input, Card, Modal } from "antd";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Row, Col, Input, Card, Modal, message } from "antd";
 import {
   SearchOutlined,
   BellOutlined,
   UserOutlined,
   PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -24,6 +26,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import CampaignModal from "components/Modals/CampaignModal";
+import { getCampaigns, deleteCampaign } from "api/campaigns";
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -31,6 +34,9 @@ function Dashboard() {
   const [isNewCampaignModalOpen, setIsNewCampaignModalOpen] =
     React.useState(false);
   const [campaignModalOpen, setCampaignModalOpen] = React.useState(false);
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [editCampaign, setEditCampaign] = useState<any | null>(null);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -45,59 +51,74 @@ function Dashboard() {
   const handleOpenNewCampaignModal = () => setIsNewCampaignModalOpen(true);
   const handleCloseNewCampaignModal = () => setIsNewCampaignModalOpen(false);
 
-  // Campaign Statistics as Navigation Buttons
-  // const campaignStats = [
-  //   {
-  //     title: "New Campaign",
-  //     value: null,
-  //     color: "#0096FF",
-  //     route: "/new-campaigns",
-  //     isNew: true,
-  //   },
-  //   {
-  //     title: "Scheduled Campaigns",
-  //     value: "1000",
-  //     color: "#A89CF1",
-  //     route: "/scheduled-campaigns",
-  //   },
-  //   {
-  //     title: "In Progress Campaigns",
-  //     value: "1000",
-  //     color: "#7FD48B",
-  //     route: "/in-progress-campaigns",
-  //   },
-  //   {
-  //     title: "Completed Campaigns",
-  //     value: "1000",
-  //     color: "#E57373",
-  //     route: "/completed-campaigns",
-  //   },
-  //   {
-  //     title: "Total Campaigns",
-  //     value: "100000",
-  //     color: "#A67B5B",
-  //     route: "/total-campaigns",
-  //   },
-  // ];
+  const fetchCampaigns = async () => {
+    setLoading(true);
+    try {
+      const { data } = await getCampaigns();
+      setCampaigns(data.data);
+    } catch (err) {
+      message.error("Failed to fetch campaigns");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  const handleDelete = async (id: string) => {
+    Modal.confirm({
+      title: "Are you sure you want to delete this campaign?",
+      onOk: async () => {
+        try {
+          await deleteCampaign(id);
+          message.success("Campaign deleted");
+          fetchCampaigns();
+        } catch {
+          message.error("Failed to delete campaign");
+        }
+      },
+    });
+  };
 
   // Table Columns
   const columns = [
-    { title: "Group ID", dataIndex: "groupId", key: "groupId" },
-    { title: "Group Name", dataIndex: "groupName", key: "groupName" },
-    { title: "Date", dataIndex: "date", key: "date" },
-    { title: "Time", dataIndex: "time", key: "time" },
+    { title: "Campaign Name", dataIndex: "campaignName", key: "campaignName" },
+    {
+      title: "Template",
+      dataIndex: "template",
+      key: "template",
+      render: (template: { name: string }) => template?.name || "-",
+    },
+    { title: "Group Ids", dataIndex: "groupIds", key: "groupIds" },
+    {
+      title: "Created At",
+      dataIndex: "createdAt",
+      key: "createdAt",
+      render: (date: string) => new Date(date).toLocaleString(),
+    },
+    { title: "Status", dataIndex: "status", key: "status" },
     { title: "Description", dataIndex: "description", key: "description" },
+    {
+      title: "Action",
+      key: "action",
+      render: (_: any, record: any) => (
+        <span>
+          <Button
+            icon={<EditOutlined />}
+            style={{ marginRight: 8 }}
+            onClick={() => setEditCampaign(record)}
+          />
+          <Button
+            icon={<DeleteOutlined />}
+            danger
+            onClick={() => handleDelete(record._id)}
+          />
+        </span>
+      ),
+    },
   ];
-
-  // Sample Data
-  const data = new Array(10).fill(null).map((_, index) => ({
-    key: index,
-    groupId: `#00${index + 1}`,
-    groupName: "Ronald Richards",
-    date: "Founder & CEO",
-    time: "ronald.richard@gmail.com",
-    description: "1234-5478910",
-  }));
 
   const colorMap = {
     "New Campaign": { bg: "#F0F7FF", border: "#339DFF", text: "#339DFF" },
@@ -243,11 +264,13 @@ function Dashboard() {
           );
         })}
       </div>
-      <CampaignModal open={campaignModalOpen} setOpen={setCampaignModalOpen} />
+      <CampaignModal open={campaignModalOpen} setOpen={setCampaignModalOpen} onSubmit={fetchCampaigns} />
       {/* Campaign Data Table */}
       <Table
         columns={columns}
-        dataSource={data}
+        dataSource={campaigns}
+        loading={loading}
+        rowKey="_id"
         pagination={{ pageSize: 10 }}
       />
     </div>
