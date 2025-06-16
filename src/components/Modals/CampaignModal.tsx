@@ -87,6 +87,7 @@ function CampaignModal({ open, setOpen, onSubmit }: CampaignModalProps) {
         },
         groupIds: values.groups,
         scheduled: isScheduled,
+        totalLeads,
       };
       delete payload.groups;
 

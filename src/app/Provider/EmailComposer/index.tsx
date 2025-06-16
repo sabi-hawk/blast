@@ -91,12 +91,29 @@ function EmailComposer() {
             ) // update
           : saveTemplate(user?._id as string, design, html, templateName); // create
 
-        const { data } = await saveFn;
+        const response = await saveFn;
+        if (response && response.data && response.status >= 200 && response.status < 300) {
+          setIsDesignSaving(false);
+          dispatch(setTemplates(response.data.files));
+          messageApi.success(response.data.message);
+        } else {
+          // Handle error from API (e.g., duplicate name)
+          const errorMsg =
+            response?.data?.message ||
+            "An error occurred while saving the template.";
+          messageApi.error(errorMsg);
+          setIsDesignSaving(false);
+        }
+      } catch (err: any) {
+        let errorMsg = "An error occurred while saving the template.";
+        if (err && typeof err === "object") {
+          errorMsg =
+            err?.response?.data?.message ||
+            err?.message ||
+            errorMsg;
+        }
+        messageApi.error(errorMsg);
         setIsDesignSaving(false);
-        dispatch(setTemplates(data.files));
-        messageApi.success(data.message);
-      } catch (err) {
-        console.log("Error | Composer | ExportHTML", err);
       }
     });
   };

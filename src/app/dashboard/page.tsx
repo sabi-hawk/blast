@@ -93,6 +93,11 @@ function Dashboard() {
     },
     { title: "Group Ids", dataIndex: "groupIds", key: "groupIds" },
     {
+      title: "Total Leads",
+      dataIndex: "totalLeads",
+      key: "totalLeads",
+    },
+    {
       title: "Created At",
       dataIndex: "createdAt",
       key: "createdAt",
