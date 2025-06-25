@@ -1,6 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAppState } from "hooks";
 import Home from "app/page";
+import About from "app/about/page";
+import Features from "app/features/page";
+import Contact from "app/contact/page";
 import Login from "app/login/page";
 import SignUp from "app/signup/page";
 import Dashboard from "app/dashboard/page";
@@ -76,6 +79,9 @@ const App = () => {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/features" element={<Features />} />
+      <Route path="/contact" element={<Contact />} />
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/provider/:providerId/chat" element={<ClientAuth />} />

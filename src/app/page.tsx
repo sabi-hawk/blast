@@ -8,23 +8,34 @@ export default function Home() {
         <div className="flex items-center gap-4">
           <img
             src="/assets/images/logo.png"
-            alt="MainPicture "
+            alt="Blast Logo"
             height={50}
             width={50}
           />
-          <h1 className="font-ubuntu text-[22px] text-[#545455]">BLAST </h1>
+          <h1 className="font-ubuntu text-[22px] text-[#545455]">BLAST</h1>
         </div>
         <nav>
           <ul className="list-none flex gap-5">
-            <p>
-              <a href="#about">About</a>
-            </p>
-            <p>
-              <a href="#features">Features</a>
-            </p>
-            <p>
-              <a href="#contact">Contact Us</a>
-            </p>
+            <li>
+              <a href="/" className="text-blue-600 font-semibold">
+                Home
+              </a>
+            </li>
+            <li>
+              <a href="/about" className="text-gray-600 hover:text-gray-900">
+                About
+              </a>
+            </li>
+            <li>
+              <a href="/features" className="text-gray-600 hover:text-gray-900">
+                Features
+              </a>
+            </li>
+            <li>
+              <a href="/contact" className="text-gray-600 hover:text-gray-900">
+                Contact Us
+              </a>
+            </li>
           </ul>
         </nav>
         <div className="flex gap-2.5">
