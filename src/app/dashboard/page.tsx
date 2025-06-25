@@ -7,6 +7,7 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
+  ReloadOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -26,7 +27,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import CampaignModal from "components/Modals/CampaignModal";
-import { getCampaigns, deleteCampaign } from "api/campaigns";
+import { getCampaigns, deleteCampaign, getCampaignStats } from "api/campaigns";
 
 function Dashboard() {
   const dispatch = useDispatch();
@@ -37,6 +38,8 @@ function Dashboard() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [editCampaign, setEditCampaign] = useState<any | null>(null);
+  const [stats, setStats] = useState({ scheduled: 0, inProgress: 0, completed: 0, total: 0 });
+  const [statsLoading, setStatsLoading] = useState(false);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -63,8 +66,21 @@ function Dashboard() {
     }
   };
 
+  const fetchStats = async () => {
+    setStatsLoading(true);
+    try {
+      const { data } = await getCampaignStats();
+      setStats(data.data);
+    } catch {
+      message.error("Failed to fetch campaign stats");
+    } finally {
+      setStatsLoading(false);
+    }
+  };
+
   useEffect(() => {
     fetchCampaigns();
+    fetchStats();
   }, []);
 
   const handleDelete = async (id: string) => {
@@ -75,6 +91,7 @@ function Dashboard() {
           await deleteCampaign(id);
           message.success("Campaign deleted");
           fetchCampaigns();
+          fetchStats();
         } catch {
           message.error("Failed to delete campaign");
         }
@@ -172,7 +189,7 @@ function Dashboard() {
     {
       title: "Scheduled",
       subtitle: "Campaigns",
-      value: "1,284",
+      value: stats.scheduled.toLocaleString(),
       icon: Calendar,
       gradient: "from-purple-500 to-pink-400",
       bgGradient: "from-purple-50 to-pink-50",
@@ -181,7 +198,7 @@ function Dashboard() {
     {
       title: "In Progress",
       subtitle: "Campaigns",
-      value: "847",
+      value: stats.inProgress.toLocaleString(),
       icon: PlayCircle,
       gradient: "from-emerald-500 to-teal-400",
       bgGradient: "from-emerald-50 to-teal-50",
@@ -190,7 +207,7 @@ function Dashboard() {
     {
       title: "Completed",
       subtitle: "Campaigns",
-      value: "2,156",
+      value: stats.completed.toLocaleString(),
       icon: CheckCircle,
       gradient: "from-orange-500 to-red-400",
       bgGradient: "from-orange-50 to-red-50",
@@ -199,7 +216,7 @@ function Dashboard() {
     {
       title: "Total",
       subtitle: "Campaigns",
-      value: "4,287",
+      value: stats.total.toLocaleString(),
       icon: BarChart3,
       gradient: "from-indigo-500 to-purple-400",
       bgGradient: "from-indigo-50 to-purple-50",
@@ -208,6 +225,21 @@ function Dashboard() {
   ];
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Sync Button */}
+      <div className="flex justify-end mb-2">
+        <Button
+          icon={<ReloadOutlined spin={statsLoading} />}
+          onClick={() => {
+            fetchStats();
+            fetchCampaigns();
+          }}
+          loading={statsLoading}
+          size="small"
+          type="default"
+          style={{ borderRadius: "50%" }}
+          title="Sync stats"
+        />
+      </div>
       {/* Campaign Stats Grid - UPDATED SECTION */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         {campaignStats.map((stat, index) => {
@@ -269,7 +301,7 @@ function Dashboard() {
           );
         })}
       </div>
-      <CampaignModal open={campaignModalOpen} setOpen={setCampaignModalOpen} onSubmit={fetchCampaigns} />
+      <CampaignModal open={campaignModalOpen} setOpen={setCampaignModalOpen} onSubmit={() => { fetchCampaigns(); fetchStats(); }} />
       {/* Campaign Data Table */}
       <Table
         columns={columns}

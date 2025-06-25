@@ -32,19 +32,19 @@ const items: MenuItem[] = [
     ),
     label: <a href="/campaign">Campaign</a>,
   },
-  {
-    key: "leads-finder",
-    icon: (
-      <img
-        className="w-[13px] h-[13px]"
-        height={13}
-        width={13}
-        src="/assets/icons/leads-finder.svg"
-        alt="leads-finder icon"
-      />
-    ),
-    label: <a href="/leads-finder">Leads Finder</a>,
-  },
+  // {
+  //   key: "leads-finder",
+  //   icon: (
+  //     <img
+  //       className="w-[13px] h-[13px]"
+  //       height={13}
+  //       width={13}
+  //       src="/assets/icons/leads-finder.svg"
+  //       alt="leads-finder icon"
+  //     />
+  //   ),
+  //   label: <a href="/leads-finder">Leads Finder</a>,
+  // },
   {
     key: "leads-management",
     icon: (

@@ -88,6 +88,7 @@ function CampaignModal({ open, setOpen, onSubmit }: CampaignModalProps) {
         groupIds: values.groups,
         scheduled: isScheduled,
         totalLeads,
+        mailSubject: values.mailSubject,
       };
       delete payload.groups;
 
@@ -129,6 +130,14 @@ function CampaignModal({ open, setOpen, onSubmit }: CampaignModalProps) {
           rules={[{ required: true, message: "Please enter a campaign name" }]}
         >
           <Input placeholder="Enter campaign name" />
+        </Form.Item>
+
+        <Form.Item
+          label="Mail Subject"
+          name="mailSubject"
+          rules={[{ required: true, message: "Please enter a mail subject" }]}
+        >
+          <Input placeholder="Enter mail subject" />
         </Form.Item>
 
         <div style={{ display: 'flex', gap: 16 }}>

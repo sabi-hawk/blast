@@ -24,3 +24,5 @@ export const deleteLead = (leadId: string) =>
 
 export const getGroupsSummary = () =>
   API.get("/leads/groups/summary");
+
+export const getLeadAnalytics = () => API.get("/leads/analytics");

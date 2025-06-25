@@ -10,6 +10,7 @@ import EmailComposer from "app/Provider/EmailComposer";
 import LeadsManagement from "app/Provider/LeadsManagement";
 import Chat from "app/Provider/Chat";
 import ClientAuth from "app/Client/auth";
+import Analytics from "app/Provider/Analytics";
 
 const App = () => {
   const {
@@ -38,6 +39,10 @@ const App = () => {
             <Route
               path="/leads-management"
               element={user ? <LeadsManagement /> : <Navigate to="../auth" />}
+            />
+            <Route
+              path="/analytics"
+              element={user ? <Analytics /> : <Navigate to="../auth" />}
             />
             <Route
               path="/chat"
